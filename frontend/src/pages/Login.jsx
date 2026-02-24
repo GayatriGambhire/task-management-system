@@ -1,53 +1,92 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { useNavigate, Link } from "react-router-dom";
 
 function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log(email, password);
-    navigate("/dashboard");
+  const [form, setForm] = useState({
+    email: "",
+    password: ""
+  });
+
+  const handleChange = (e) => {
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleLogin = async () => {
+
+    // 🔹 VALIDATION
+    if (!form.email || !form.password) {
+      alert("Email and Password are required");
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        "http://127.0.0.1:8000/api/login/",
+        form
+      );
+
+      localStorage.setItem("user_id", response.data.user_id);
+      localStorage.setItem("name", response.data.name);
+
+      navigate("/dashboard");
+
+    } catch (error) {
+      alert(error.response?.data?.error || "Login failed");
+    }
   };
 
   return (
-    <div className="container d-flex justify-content-center align-items-center vh-100">
-      <div className="card p-4 shadow" style={{ width: "400px" }}>
-        <h3 className="text-center mb-4">Login</h3>
+    <div
+      className="vh-100 d-flex justify-content-center align-items-center"
+      style={{
+        backgroundImage:
+          "url('https://images.unsplash.com/photo-1555066931-4365d14bab8c')",
+        backgroundSize: "cover",
+        backgroundPosition: "center"
+      }}
+    >
+      <div
+        className="card p-4 shadow"
+        style={{
+          width: "350px",
+          backgroundColor: "rgba(255,255,255,0.95)"
+        }}
+      >
+        <h3 className="text-center mb-3">Task Management System</h3>
 
-        <form onSubmit={handleSubmit}>
-          <div className="mb-3">
-            <label className="form-label">Email</label>
-            <input
-              type="email"
-              className="form-control"
-              placeholder="Enter email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
+        <input
+          type="email"
+          name="email"
+          placeholder="Email"
+          className="form-control mb-2"
+          value={form.email}
+          onChange={handleChange}
+        />
 
-          <div className="mb-3">
-            <label className="form-label">Password</label>
-            <input
-              type="password"
-              className="form-control"
-              placeholder="Enter password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          className="form-control mb-3"
+          value={form.password}
+          onChange={handleChange}
+        />
 
-          <button className="btn btn-primary w-100">Login</button>
-        </form>
+        <button
+          className="btn btn-primary btn-sm w-100"
+          onClick={handleLogin}
+        >
+          Login
+        </button>
 
-        <p className="text-center mt-3">
-          Don’t have an account?{" "}
-          <Link to="/register">Register</Link>
+        <p className="text-center mt-3 small">
+          Don't have an account? <Link to="/register">Register</Link>
         </p>
       </div>
     </div>

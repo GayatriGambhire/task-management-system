@@ -1,24 +1,24 @@
 import { Link } from "react-router-dom";
 
 function Navbar() {
+  const handleLogout = () => {
+    localStorage.clear();
+    window.location.href = "/";
+  };
+
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
-      <div className="container">
+    <nav className="navbar navbar-dark bg-dark">
+      <div className="container d-flex justify-content-between">
         <Link className="navbar-brand" to="/dashboard">
           Task Manager
         </Link>
 
-        <div>
-          <Link className="btn btn-outline-light me-2" to="/dashboard">
-            Dashboard
-          </Link>
-          <Link className="btn btn-outline-light me-2" to="/tasks">
-            Tasks
-          </Link>
-          <Link className="btn btn-danger" to="/">
-            Logout
-          </Link>
-        </div>
+        <button
+          className="btn btn-sm btn-outline-light"
+          onClick={handleLogout}
+        >
+          Logout
+        </button>
       </div>
     </nav>
   );
